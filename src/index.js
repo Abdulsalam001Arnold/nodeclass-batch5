@@ -3,11 +3,19 @@ import userRoutes from './routes/userRoutes.js'
 import dotenv from 'dotenv'
 dotenv.config()
 import { connectToDb } from './config/dbConnect.js'
+import cookieParser from 'cookie-parser'
+import cors from 'cors'
 
 
 const app = express()
 app.use(express.json())
+app.use(cookieParser())
 app.use(express.urlencoded({extended: true}))
+app.use(cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "DELETE"],
+    credentials: true
+}))
 await connectToDb()
 
 app.use(userRoutes)

@@ -45,10 +45,10 @@ export const postUser = async (req, res) => {
 
                const token = await generateToken(newUser._id)
 
-               res.cookie('token', token, {
+               res.cookie('genToken', token, {
                     httpOnly: true,
                     secure: process.env.NODE_ENV === "production",
-                    strict: "lax",
+                    sameSite: "lax",
                     maxAge: 1000 * 60 * 60 * 24 * 7
                })
                return res.status(201).json({
@@ -98,6 +98,15 @@ export const Login = async (req, res) => {
                })
           }
 
+          const token = await generateToken(existingUser._id)
+
+          res.cookie('genToken', token, {
+               httpOnly: true,
+               secure: process.env.NODE_ENV === "production",
+               sameSite: "lax",
+               maxAge: 1000 * 60 * 60 * 24 * 7
+          })
+
           return res.status(200).json({
                message: "Login successful",
                data: existingUser
@@ -105,4 +114,51 @@ export const Login = async (req, res) => {
      } catch (err) {
           console.error(err)
      }
+}
+
+export const getAllUsers = async (req, res) => {
+     try {
+          const users = await userModel.find().select("-password")
+
+          if(!users) {
+               return res.status(404).json({
+                    message: "No users found"
+               })
+          }
+
+          return res.status(200).json({
+               message: "Users retrieved successfully",
+               data: users
+          })
+     } catch (err) {
+          if(err instanceof Error) {
+               console.error(err)
+               throw new Error(err.message)
+          }
+     }
+}
+
+
+export const getSingle = async (req, res) => {
+
+     const { id } = req.params
+    try {
+     const user = await userModel.findById(id).select("-password")
+
+     if(!user) {
+          return res.status(404).json({
+               message: `User with id: ${id} not found`
+          })
+     }
+
+     return res.status(200).json({
+          message: "User retrieved successfully",
+          data: user
+     })
+    } catch (err) {
+          if(err instanceof Error) {
+               console.error(err)
+               throw new Error(err.message)
+          }
+    }
 }
