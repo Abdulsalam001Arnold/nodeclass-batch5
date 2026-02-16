@@ -162,3 +162,43 @@ export const getSingle = async (req, res) => {
           }
     }
 }
+
+export const deleteSingle = async (req, res) => {
+     const { id } = req.params
+     try {
+        
+          const user = await userModel.findByIdAndDelete(id)
+
+          if(!user) {
+               return res.status(404).json({
+                    message: `User with id: ${id} not found`
+               })
+          }
+
+          return res.status(200).json({
+               message: "User deleted successfully",
+               data: user
+          })
+     }catch(err) {
+          if(err instanceof Error) {
+               console.error(err)
+               throw new Error(err.message)
+          }
+     }
+}
+
+export const logOut = (req, res) => {
+     try {
+       res.clearCookie("genToken", {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+       })
+
+       return res.status(200).json({
+          message: "Logout successful"
+       })
+     }catch(err) {
+          console.error(err)
+     }
+}
