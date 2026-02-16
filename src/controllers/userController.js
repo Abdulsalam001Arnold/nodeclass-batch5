@@ -1,5 +1,5 @@
 
-import { userValidation, userValidationForLogin } from "../../validator/userValidator.js"
+import { userValidation, userValidationForLogin } from "../validator/userValidator.js"
 import { userModel } from "../models/userSchema.js"
 import bcrypt from "bcryptjs"
 import { generateToken } from "../utils/generateToken.js"
